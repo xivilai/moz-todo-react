@@ -9,6 +9,7 @@
     "gulp": "^4.0.2",
     "gulp-less": "^4.0.1",
     "gulp-sass": "^4.1.0",
+    "nanoid": "^3.1.12",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"

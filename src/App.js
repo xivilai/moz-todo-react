@@ -1,54 +1,62 @@
-import React from 'react';
-import Todo from './components/Todo'
+import React, { useState } from 'react';
+import FilterButton from './components/FilterButton';
+import Form from './components/Form';
+import Todo from './components/Todo';
+import { nanoid } from 'nanoid';
 
 function App(props) {
-  const taskList = props.tasks.map(task =>
+  const [tasks, setTasks] = useState(props.tasks);
+  const taskList = tasks.map(task =>
     <Todo
       id={task.id}
-      key={task.id}
       name={task.name}
       completed={task.completed}
+      toggleTaskCompleted={toggleTaskCompleted}
+      deleteTask={deleteTask}
+      key={task.id}
     />
   );
+
+  const filterList = props.filters.map(filter =>
+    <FilterButton
+      filterName={filter.name}
+      aria-pressed={props.ariaPressed}
+      key={filter.id}
+    />
+  );
+
+  function addTask(name) {
+    const newTask = { id: "todo-" + nanoid(), name: name, completed: false };
+    setTasks([...tasks, newTask]);
+  }
+
+  function deleteTask(id) {
+    const updatedTasks = tasks.filter(task => task.id !== id);
+    setTasks(updatedTasks);
+  }
+
+  function toggleTaskCompleted(id) {
+    const updatedTasks = tasks.map(task => {
+      // if this task has the same ID as the edited task
+      if (id === task.id) {
+        // use object spread to make a new object
+        // whose `completed` prop has been inverted
+        return {...task, completed: !task.completed}
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
-      <form>
-        <h2 className="label-wrapper">
-          <label htmlFor="new-todo-input" className="label__lg">
-            What needs to be done?
-          </label>
-        </h2>
-        <input
-          type="text"
-          id="new-todo-input"
-          className="input input__lg"
-          name="text"
-          autoComplete="off"
-        />
-        <button type="submit" className="btn btn__primary btn__lg">
-          Add
-        </button>
-      </form>
+      <Form onSubmit={addTask} />
       <div className="filters btn-group stack-exception">
-        <button type="button" className="btn toggle-btn" aria-pressed="true">
-          <span className="visually-hidden">Show </span>
-          <span>all</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Active</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Completed</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
+        {filterList}
       </div>
       <h2 id="list-heading">
-        3 tasks remaining
+        {tasks.length}{tasks.length > 1 && tasks.length === 0 ? ' tasks' : ' task'} remaining
       </h2>
       <ul
         role="list"
