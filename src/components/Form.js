@@ -12,7 +12,7 @@ export default function Form(props) {
     evt.preventDefault();
     let input = document.getElementById('new-todo-input');
     if (input.value.length > 0) {
-      props.onSubmit(document.getElementById('new-todo-input').value);
+      props.onSubmit(input.value);
       // setName("");
     } else {
       alert('please enter somethhing');

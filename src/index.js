@@ -10,8 +10,8 @@ const DATA = [
 ];
 
 const FILTERS = [
-  { id: "filter-0", name: "Active", ariaPressed: "true" },
   { id: "filter-1", name: "All", ariaPressed: "false" },
+  { id: "filter-0", name: "Active", ariaPressed: "true" },
   { id: "filter-2", name: "Completed", ariaPressed: "false" }
 ]
 
