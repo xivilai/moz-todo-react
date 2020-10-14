@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import FilterButton from './components/FilterButton';
 import Form from './components/Form';
 import Todo from './components/Todo';
@@ -12,9 +12,19 @@ const FILTER_MAP = {
 
 const FILTER_NAMES = Object.keys(FILTER_MAP);
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+      ref.current = value;
+  });
+  return ref.current;
+}
+
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
   const [filter, setFilter] = useState('All');
+  const listHeadingRef = useRef(null);
+  const prevTaskLength = usePrevious(tasks.length);
 
   const taskList = tasks
     .filter(FILTER_MAP[filter])
@@ -73,24 +83,16 @@ function App(props) {
     setTasks(updatedTasks);
   }
 
-  function filterTasks(filterName) {
-    switch (filterName) {
-      case "All":
-        setTasks(props.tasks);
-        break;
-        case "Active":
-        setTasks(props.tasks.filter(task => !task.completed))
-        break;
-        case "Completed":
-        setTasks(props.tasks.filter(task => task.completed))
-        break;
-      default: console.log('wrong filterName')
-        break;
-    }
-  }
-
   const tasksNoun = taskList.length !== 1 ? 'tasks' : 'task';
   const tasksHeading = `${taskList.length} ${tasksNoun} remaining`;
+
+  useEffect(() => {
+    let taskWasDeleted = tasks.length - prevTaskLength === -1;
+    if (taskWasDeleted) {
+      listHeadingRef.current.focus();
+    }
+  }, [tasks.length, prevTaskLength])
+
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
@@ -98,7 +100,7 @@ function App(props) {
       <div className="filters btn-group stack-exception">
         {filterList}
       </div>
-      <h2 id="list-heading">
+      <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>
         {tasksHeading}
       </h2>
       <ul
